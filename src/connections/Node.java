@@ -46,5 +46,11 @@ public class Node {
     public String getNodeName() {
         return nodeName;
     }
+    public void makeAdded(){
+        added = true;
+    }
+    public boolean isAdded(){
+        return added;
+    }
 
 }
