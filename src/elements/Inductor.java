@@ -6,7 +6,10 @@ import connections.Node;
 
 public class Inductor extends Element{
     private double inductance;
-
+    public Inductor(String elementName,double inductance){
+        this.elementName = elementName;
+        this.inductance = inductance;
+    }
     @Override
     public void update() {
         this.v = this.nodeP.getV() - this.nodeN.getV();

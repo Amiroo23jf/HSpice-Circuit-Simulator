@@ -4,6 +4,11 @@ import connections.Node;
 
 public class Resistor extends Element {
     private double resistant;
+
+    public Resistor(String elementName,double resistant){
+        this.elementName = elementName;
+        this.resistant = resistant;
+    }
     @Override
     public void update() {
         this.v = this.nodeP.getV() - this.nodeN.getV();

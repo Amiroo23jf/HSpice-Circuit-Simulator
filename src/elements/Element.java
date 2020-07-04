@@ -13,14 +13,21 @@ public abstract class Element {
     public final static int CCVS = 23;
     public final static int VCVS = 24;
 
-    protected double vPre;
+    protected double vPre = 0;
     protected double v;
-    protected double iPre;
+    protected double iPre = 0;
     protected double i;
     public Node nodeP;
     public Node nodeN;
     protected String elementName;
 
+    public void setNodes(Node nodeP, Node nodeN){
+        this.nodeN = nodeN;
+        this.nodeP = nodeP;
+    }
+    public boolean equals(Element element){
+        return element.elementName.equals(this.elementName);
+    }
     public abstract void update();
     public abstract double getCurrentEnteringNode(Node node);
     public abstract int getElementType();

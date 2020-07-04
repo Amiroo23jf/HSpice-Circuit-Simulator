@@ -4,10 +4,7 @@ import connections.Node;
 import connections.Union;
 import elements.Element;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Database {
     private static Database database = new Database();
@@ -19,6 +16,8 @@ public class Database {
     private Double deltaT;
     List<Node> nodeList = new ArrayList<>();
     List<Union> unionList = new ArrayList<>();
+    List<Element> elementList = new ArrayList<>();
+    Map<String,Node> nodeMap = new HashMap<>();
     Queue<Node> visitList = new LinkedList<>();
     Node earthNode;
 
@@ -36,6 +35,15 @@ public class Database {
     }
 
     //Initial
+    public static void addElementsToNodes(){
+        for(Node node : database.nodeList){
+            for (Element element : database.elementList){
+                if (element.nodeP.equals(node) || element.nodeN.equals(node)){
+                    node.addElement(element);
+                }
+            }
+        }
+    }
     public static void createNodeGraph(){
         for(Node node : database.nodeList){
             for(Node connectedNode : database.nodeList){

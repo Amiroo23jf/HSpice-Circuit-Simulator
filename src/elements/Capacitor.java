@@ -6,7 +6,10 @@ import connections.Node;
 public class Capacitor extends Element{
     private double capacity;
 
-
+    public Capacitor(String elementName, double capacity){
+        this.elementName = elementName;
+        this.capacity = capacity;
+    }
     @Override
     public void update() {
         this.v = this.nodeP.getV() - this.nodeN.getV();

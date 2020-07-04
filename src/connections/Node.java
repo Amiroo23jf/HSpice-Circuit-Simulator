@@ -15,10 +15,11 @@ public class Node {
     public Union union = new Union(this);
     private boolean added = false;
     private String nodeName;
-    private double v;
-    private double vPre;
+    private double v ;
+    private double vPre = 0;
     public List<Node> connectedNodes = new ArrayList<>();
     private List<Element> elementList = new ArrayList<>();
+
 
     public double getV(){
         return v;
@@ -55,9 +56,6 @@ public class Node {
         return added;
     }
 
-    public void setUnion(Union union){
-        this.union = union;
-    }
     public boolean elementBetweenIsVoltageSource(Node connectedNode){
         for(Element element : this.elementList){
             if(element.nodeP.equals(connectedNode) || element.nodeN.equals(connectedNode)){
