@@ -22,4 +22,9 @@ public class Inductor extends Element{
             return +i;
         }
     }
+
+    @Override
+    public int getElementType() {
+        return Element.INDUCTOR;
+    }
 }

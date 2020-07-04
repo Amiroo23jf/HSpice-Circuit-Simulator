@@ -22,4 +22,9 @@ public class Capacitor extends Element{
             return +i;
         }
     }
+
+    @Override
+    public int getElementType() {
+        return Element.CAPACITOR;
+    }
 }

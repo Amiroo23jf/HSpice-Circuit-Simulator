@@ -6,13 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-    private int nodeNumber;
-    private Union union;
+    public static Node EMPTY_NODE = new Node("EMPTY_NODE_x00-1");
+
+
+    Node(String nodeName){
+        this.nodeName = nodeName;
+    }
+    public Union union = new Union(this);
     private boolean added = false;
     private String nodeName;
     private double v;
     private double vPre;
-    private List<Node> connectedNodes = new ArrayList<>();
+    public List<Node> connectedNodes = new ArrayList<>();
     private List<Element> elementList = new ArrayList<>();
 
     public double getV(){
@@ -37,10 +42,7 @@ public class Node {
         }
     }
     public boolean equals(Node node){
-        if(node.getNodeName().equals(this.getNodeName())){
-            return true;
-        }
-        return false;
+        return node.getNodeName().equals(this.getNodeName());
     }
 
     public String getNodeName() {
@@ -52,5 +54,21 @@ public class Node {
     public boolean isAdded(){
         return added;
     }
+
+    public void setUnion(Union union){
+        this.union = union;
+    }
+    public boolean elementBetweenIsVoltageSource(Node connectedNode){
+        for(Element element : this.elementList){
+            if(element.nodeP.equals(connectedNode) || element.nodeN.equals(connectedNode)){
+                int elementType = element.getElementType();
+                if (elementType == Element.VOLTAGE_SOURCE || elementType == Element.VCVS || elementType == Element.CCVS){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
 }

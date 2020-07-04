@@ -20,4 +20,9 @@ public class Resistor extends Element {
         }
     }
 
+    @Override
+    public int getElementType() {
+        return Element.RESISTOR;
+    }
+
 }

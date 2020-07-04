@@ -2,9 +2,12 @@ package base;
 
 import connections.Node;
 import connections.Union;
+import elements.Element;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Database {
     private static Database database = new Database();
@@ -16,6 +19,7 @@ public class Database {
     private Double deltaT;
     List<Node> nodeList = new ArrayList<>();
     List<Union> unionList = new ArrayList<>();
+    Queue<Node> visitList = new LinkedList<>();
     Node earthNode;
 
     //Constants
@@ -44,13 +48,48 @@ public class Database {
         }
     }
     public static void createUnionGraph(){
+        database.visitList.add(database.earthNode);
+        database.earthNode.makeAdded();
+        for(Node node : database.visitList){
+            Database.findUnionsForNode(node);
+        }
+    }
+
+    private static void findUnionsForNode(Node node) {
+        if (isAllNodesAdded()){
+            return;
+        }
+        for(Node connectedNode : node.connectedNodes){
+            if(!connectedNode.isAdded()){
+                database.visitList.add(connectedNode);
+                connectedNode.makeAdded();
+            }
+            if(node.elementBetweenIsVoltageSource(connectedNode)){
+                connectedNode.union = node.union;
+                node.union.addNode(connectedNode);
+            }
+        }
+        addUnion(node.union);
 
     }
-    public static void findEarthNode(){
+    public static boolean isAllNodesAdded(){
+        for(Node node : database.nodeList){
+            if (!node.isAdded()){
+                return false;
+            }
+        }
+        return true;
+    }
+    public static void createEarthNode(){
         for(Node node : database.nodeList){
             if (node.getNodeName().equals("0")){
                 database.earthNode = node;
             }
+        }
+    }
+    private static void addUnion(Union union){
+        if (!database.unionList.contains(union)){
+            database.unionList.add(union);
         }
     }
 
