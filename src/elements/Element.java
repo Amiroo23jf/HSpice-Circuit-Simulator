@@ -21,6 +21,17 @@ public abstract class Element {
     public Node nodeN;
     protected String elementName;
 
+    public void nextStep(){
+        iPre = i;
+        vPre = v;
+    }
+    public String getName(){
+        return elementName;
+    }
+    public void printNodes(){
+        System.out.println("    Node Positive : " + nodeP.getNodeName());
+        System.out.println("    Node Negative : " + nodeN.getNodeName());
+    }
     public void setNodes(Node nodeP, Node nodeN){
         this.nodeN = nodeN;
         this.nodeP = nodeP;
