@@ -1,23 +1,25 @@
 package elements;
 
+import base.Database;
 import connections.Node;
 
-public class Resistor extends Element {
-    private double resistant;
+public class Capacitor extends Element{
+    private double capacity;
+
+
     @Override
     public void update() {
         this.v = this.nodeP.getV() - this.nodeN.getV();
-        this.i = this.v / this.resistant;
+        this.i = this.capacity * (v - vPre)/ Database.getDeltaT();
     }
 
     @Override
     public double getCurrentEnteringNode(Node node) {
-        if (node.equals(nodeP)){
+        if(node.equals(nodeP)){
             return -i;
         }
-        else {
+        else{
             return +i;
         }
     }
-
 }
