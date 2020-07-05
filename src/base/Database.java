@@ -2,10 +2,7 @@ package base;
 
 import connections.Node;
 import connections.Union;
-import elements.Capacitor;
-import elements.CurrentSource;
-import elements.Element;
-import elements.Resistor;
+import elements.*;
 
 import java.util.*;
 
@@ -58,6 +55,9 @@ public class Database {
         else if(input.startsWith("C")){
             System.out.println("Element is a Capacitor");
             createCapacitor(input);
+        }
+        else if(input.startsWith("L")){
+            System.out.println("Element is an Inductor");
         }
     }
     public static void solver(double deltaT,double deltaV, double deltaI, double t0){
@@ -297,6 +297,38 @@ public class Database {
             database.nodeList.add(nodeP);
         }
         Element element = new Capacitor(elementName,capacity);
+        element.setNodes(nodeP,nodeN);
+        database.elementList.add(element);
+    }
+    private static void createInductor(String input){
+        String[] inputs = input.split("\\s+");
+        if(inputs.length!= 4){
+            //ERROR
+            return;
+        }
+        String elementName = inputs[0];
+        double inductance = Double.parseDouble(inputs[3]);
+        String nodePName = inputs[1];
+        String nodeNName = inputs[2];
+        Node nodeP;
+        Node nodeN;
+        if (database.nodeMap.containsKey(nodeNName)){
+            nodeN = database.nodeMap.get(nodeNName);
+        }
+        else {
+            nodeN = new Node(nodeNName);
+            database.nodeMap.put(nodeNName,nodeN);
+            database.nodeList.add(nodeN);
+        }
+        if(database.nodeMap.containsKey(nodePName)){
+            nodeP = database.nodeMap.get(nodePName);
+        }
+        else{
+            nodeP = new Node(nodePName);
+            database.nodeMap.put(nodePName,nodeP);
+            database.nodeList.add(nodeP);
+        }
+        Element element = new Inductor(elementName,inductance);
         element.setNodes(nodeP,nodeN);
         database.elementList.add(element);
     }
