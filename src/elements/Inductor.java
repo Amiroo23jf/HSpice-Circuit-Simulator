@@ -30,4 +30,9 @@ public class Inductor extends Element{
     public int getElementType() {
         return Element.INDUCTOR;
     }
+
+    @Override
+    public double increaseNodeVoltage(Node connectedNode) {
+        return 0;
+    }
 }

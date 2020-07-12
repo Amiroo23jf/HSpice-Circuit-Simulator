@@ -30,4 +30,9 @@ public class Resistor extends Element {
         return Element.RESISTOR;
     }
 
+    @Override
+    public double increaseNodeVoltage(Node connectedNode) {
+        return 0;
+    }
+
 }

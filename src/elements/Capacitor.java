@@ -30,4 +30,9 @@ public class Capacitor extends Element{
     public int getElementType() {
         return Element.CAPACITOR;
     }
+
+    @Override
+    public double increaseNodeVoltage(Node connectedNode) {
+        return 0;
+    }
 }

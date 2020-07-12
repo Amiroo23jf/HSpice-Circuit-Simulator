@@ -1,9 +1,12 @@
 package connections;
 
 import base.Database;
+import elements.Element;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Union {
 
@@ -48,7 +51,10 @@ public class Union {
         }
         findTotalCurrents(deltaV);
         double dI = totalCurrent1 - totalCurrent2;
-        double dV = totalCurrent2/dI * deltaV;
+        //System.out.println("Total1 : "+totalCurrent1);
+        //System.out.println("Total2 : " + totalCurrent2);
+        //System.out.println(dI);
+        double dV = totalCurrent1/deltaI * deltaV;
         if(dI < 0){
             dV = -dV;
         }
@@ -82,5 +88,41 @@ public class Union {
             System.out.println("       " + node.getNodeName());
         }
         System.out.println("_____________");
+    }
+
+    public void updateNodesVoltage() {
+        resetNodesUpdated();
+        while(!areAllNodesUpdated()){
+            for(Node node : nodeList){
+                if(node.isUpdated()){
+                    for(Node connectedNode : node.connectedNodes){
+                        if(!connectedNode.isUpdated() && connectedNode.isFromSameUnion(node)){
+                            Element element = node.getVoltageSourceWithNode(connectedNode);
+                            connectedNode.setV(node.getV() + element.increaseNodeVoltage(connectedNode));
+                            connectedNode.updateV();
+                            connectedNode.makeUpdated(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean areAllNodesUpdated() {
+        for(Node node : nodeList){
+            if(!node.isUpdated()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void resetNodesUpdated() {
+        for(Node node : nodeList){
+            node.makeUpdated(false);
+            node.makeAddedToUpdateQueue(false);
+        }
+        baseNode.makeUpdated(true);
+
     }
 }

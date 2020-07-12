@@ -37,4 +37,9 @@ public class CurrentSource extends Element {
     public int getElementType() {
         return Element.CURRENT_SOURCE;
     }
+
+    @Override
+    public double increaseNodeVoltage(Node connectedNode) {
+        return 0;
+    }
 }
