@@ -425,7 +425,7 @@ public class Database {
         element.makeNewInfoFile();
     }
 
-    public void initialize() {
+    public void __initialize__() {
         addElementsToNodes();
         createNodeGraph();
         printNodesElements();

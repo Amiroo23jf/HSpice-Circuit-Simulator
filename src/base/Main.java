@@ -19,7 +19,7 @@ public class Main {
             Database.createElement(input);
             input = scanner.nextLine();
         }
-        Database.getInstance().initialize();
+        Database.getInstance().__initialize__();
         Database.solver(0.001,0.00001,0.01 , t0);
         Database.getInstance().finalResults();
     }
