@@ -4,31 +4,29 @@ import base.Database;
 import connections.Node;
 
 import java.awt.*;
+import java.io.IOException;
 
-public class VoltageSource extends Element {
-    public static final VoltageSource SAMPLE = new VoltageSource("V1",0,0,0,0);
+public class VCVS extends Element{
+    private Node positiveController;
+    private Node negativeController;
+    private double controllerVoltage;
+    private double ratio;
 
-    private double vOffset;
-    private double vSin;
-    private double freq;
-    private double phi;
-
-    public VoltageSource(String elementName, double vOff, double vSin, double freq, double phi) {
+    public VCVS(String elementName, String positiveControllerName, String negativeControllerName, double ratio) throws IOException {
+        this.positiveController = Database.getInstance().findNode(positiveControllerName);
+        this.negativeController = Database.getInstance().findNode(negativeControllerName);
+        this.ratio = ratio;
         this.elementName = elementName;
-        this.vOffset = vOff;
-        this.vSin = vSin;
-        this.freq = freq;
-        this.phi = phi;
     }
 
     @Override
     public void update() {
-        this.v = this.vOffset + this.vSin * Math.sin(2 * Math.PI * freq * (Database.t() + Database.getDeltaT()) + phi);
-
+        this.controllerVoltage = positiveController.getV() - negativeController.getV();
+        this.v = this.controllerVoltage * this.ratio;
     }
 
     @Override
-    public double getCurrentEnteringNode(Node node) {
+    public double getCurrentEnteringNode(Node node){
         if (node.equals(nodeP)){
             return -i;
         }
@@ -39,7 +37,7 @@ public class VoltageSource extends Element {
 
     @Override
     public int getElementType() {
-        return Element.VOLTAGE_SOURCE;
+        return Element.VCVS;
     }
 
     @Override
@@ -54,15 +52,10 @@ public class VoltageSource extends Element {
     public void drawElement(Graphics g, Dimension dimension1, Dimension dimension2) {
         drawName(g,dimension1,dimension2);
         double angle = findAngle(dimension1,dimension2);
-        Dimension dim = nextDim(dimension1,ELEMENT_LENGTH/2,angle);
-        drawCircle(g,dim.width,dim.height,Element.ELEMENT_LENGTH/2);
+        drawPolygon(g,dimension1,dimension2);
         Dimension dimPlus = nextDim(dimension1,Element.ELEMENT_LENGTH/4,angle);
-        Dimension dimMinus = nextDim(dimension1, Element.ELEMENT_LENGTH/4*3,angle);
+        Dimension dimMinus = nextDim(dimension2, Element.ELEMENT_LENGTH/4*3,angle);
         g.drawString("+",dimPlus.width,dimMinus.height);
         g.drawString("-",dimMinus.width,dimMinus.height);
-
-
     }
-
-
 }

@@ -3,16 +3,13 @@ package connections;
 import base.Database;
 import elements.Element;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Union {
 
     public Union(Node baseNode){
         this.baseNode = baseNode;
-        System.out.println("Union " + baseNode.getNodeName() + " Created");
+        Database.getInstance().log("    Union " + baseNode.getNodeName() + " Created");
         this.unionName = baseNode.getNodeName();
         this.nodeList.add(baseNode);
     }
@@ -22,6 +19,7 @@ public class Union {
     private double totalCurrent1 ;
     private double totalCurrent2 ;
     private Node baseNode ;
+    private Map<Element, Boolean> VSCurrentMap = new HashMap<>();
 
     //Updater
     public void addNode(Node node){
@@ -82,22 +80,27 @@ public class Union {
 
 
     public void printUnionNodes() {
-        System.out.println("Union " + unionName );
-        System.out.println(" Nodes:");
+        Database.getInstance().log("        Union " + unionName );
+        Database.getInstance().log("            Nodes:");
         for(Node node : nodeList){
-            System.out.println("       " + node.getNodeName());
+            Database.getInstance().log("                " + node.getNodeName());
         }
-        System.out.println("_____________");
     }
 
     public void updateNodesVoltage() {
         resetNodesUpdated();
         while(!areAllNodesUpdated()){
             for(Node node : nodeList){
+                //Database.getInstance().log("Node is : "+node.getNodeName());
                 if(node.isUpdated()){
                     for(Node connectedNode : node.connectedNodes){
                         if(!connectedNode.isUpdated() && connectedNode.isFromSameUnion(node)){
+                            //Database.getInstance().log("    ConnectedNode is : "+connectedNode.getNodeName());
                             Element element = node.getVoltageSourceWithNode(connectedNode);
+                            //Database.getInstance().log("        Element is : " + element.getName());
+                            if(element.getName().equals("EMPTY")){
+                                continue;
+                            }
                             connectedNode.setV(node.getV() + element.increaseNodeVoltage(connectedNode));
                             connectedNode.updateV();
                             connectedNode.makeUpdated(true);
@@ -107,6 +110,8 @@ public class Union {
             }
         }
     }
+
+    //Creating Graph
 
     private boolean areAllNodesUpdated() {
         for(Node node : nodeList){
@@ -125,4 +130,76 @@ public class Union {
         baseNode.makeUpdated(true);
 
     }
+
+    //Voltage Source Current
+
+    public void resetVSCurrents() {
+        for(Node node : nodeList){
+            node.resetVSCurrent();
+        }
+    }
+
+    public void findVSCurrents() {
+        while(!isAllVSCurrentsFound()){
+            for(Node node : nodeList){
+                if(node.numberOfNotFoundVSCurrents() == 1){
+                    node.findVSCurrent();
+                }
+            }
+        }
+    }
+
+    private boolean isAllVSCurrentsFound() {
+        for(Node node : nodeList){
+            if(!node.isVSCurrentsFound()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    //Error Checkers
+
+    public boolean isErrorTwo() {
+        if(!areAllEnteringElementsCS()){
+            return false;
+        }
+        return !isKclEstablished();
+    }
+
+    public boolean isErrorThree() {
+        if(!hasCycle()){
+            return false;
+        }
+        return !isKvlEstablished();
+    }
+
+    private boolean isKvlEstablished() {
+        //needs to be changed
+        return true;
+    }
+
+    private boolean hasCycle() {
+        //needs to be changed
+        return false;
+    }
+
+    public boolean isKclEstablished() {
+        double current = 0;
+        for(Node node : nodeList){
+            current = current + node.enteringCurrent();
+        }
+        return Math.abs(current) < Database.getDeltaI();
+    }
+
+    private boolean areAllEnteringElementsCS() {
+        for(Node node : nodeList){
+            if(!node.areAllEnteringElementsCS()){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

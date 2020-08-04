@@ -5,25 +5,21 @@ import connections.Node;
 
 import java.awt.*;
 
-public class VoltageSource extends Element {
-    public static final VoltageSource SAMPLE = new VoltageSource("V1",0,0,0,0);
+public class CCVS extends Element {
+    private Element controller;
+    private double controllerCurrent;
+    private double ratio;
 
-    private double vOffset;
-    private double vSin;
-    private double freq;
-    private double phi;
-
-    public VoltageSource(String elementName, double vOff, double vSin, double freq, double phi) {
+    public CCVS(String elementName, String controllerName, double ratio) {
+        this.controller = Database.getInstance().findElement(controllerName);
+        this.ratio = ratio;
         this.elementName = elementName;
-        this.vOffset = vOff;
-        this.vSin = vSin;
-        this.freq = freq;
-        this.phi = phi;
     }
 
     @Override
     public void update() {
-        this.v = this.vOffset + this.vSin * Math.sin(2 * Math.PI * freq * (Database.t() + Database.getDeltaT()) + phi);
+        this.controllerCurrent = controller.getI();
+        this.v = this.controllerCurrent * ratio;
 
     }
 
@@ -39,7 +35,7 @@ public class VoltageSource extends Element {
 
     @Override
     public int getElementType() {
-        return Element.VOLTAGE_SOURCE;
+        return Element.CCVS;
     }
 
     @Override
@@ -54,15 +50,10 @@ public class VoltageSource extends Element {
     public void drawElement(Graphics g, Dimension dimension1, Dimension dimension2) {
         drawName(g,dimension1,dimension2);
         double angle = findAngle(dimension1,dimension2);
-        Dimension dim = nextDim(dimension1,ELEMENT_LENGTH/2,angle);
-        drawCircle(g,dim.width,dim.height,Element.ELEMENT_LENGTH/2);
+        drawPolygon(g,dimension1,dimension2);
         Dimension dimPlus = nextDim(dimension1,Element.ELEMENT_LENGTH/4,angle);
-        Dimension dimMinus = nextDim(dimension1, Element.ELEMENT_LENGTH/4*3,angle);
+        Dimension dimMinus = nextDim(dimension2, Element.ELEMENT_LENGTH/4*3,angle);
         g.drawString("+",dimPlus.width,dimMinus.height);
         g.drawString("-",dimMinus.width,dimMinus.height);
-
-
     }
-
-
 }

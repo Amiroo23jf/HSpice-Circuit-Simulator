@@ -56,7 +56,7 @@ public class Node {
         double current = 0;
         for (Element element : elementList) {
             if ((element.getElementType() != Element.VCVS) && (element.getElementType() != Element.CCVS) && (element.getElementType() != Element.VOLTAGE_SOURCE)) {
-                element.update();
+                //element.update();
                 //System.out.println("Entering current from element " + element.getName() + " = " + element.getCurrentEnteringNode(this));
                 current = current + element.getCurrentEnteringNode(this);
             }
@@ -153,7 +153,8 @@ public class Node {
     //Files
     public void makeInfoFile() throws IOException{
         fileAddress = Database.getInstance().savingSrc + "/Nodes/" + nodeName + ".txt";
-        System.out.println("Node Src Address is : " + fileAddress);
+        Database.getInstance().log("    Node " + nodeName + " Created");
+        Database.getInstance().log("        Node Src Address is : " + fileAddress);
         FileWriter writer = new FileWriter(fileAddress);
         // time   voltage   Current
         writer.write("");
@@ -164,14 +165,73 @@ public class Node {
         writer.append(Database.t() + "   " + this.getV() + "   " + this.enteringCurrent() + "\n");
         writer.close();
     }
+    public String getAddress() {
+        return fileAddress;
+    }
 
     //Printers
     public void printElementList() {
         for (Element element : elementList) {
-            System.out.println("     " + element.getName());
+            Database.getInstance().log("            " + element.getName());
         }
 
 
+    }
+
+    //Calculating Voltage Sources' Currents
+
+    public void resetVSCurrent() {
+        for (Element element : elementList){
+            if (element.getElementType() == Element.VCVS || element.getElementType() == Element.CCVS || element.getElementType() == Element.VOLTAGE_SOURCE){
+                element.resetCurrent();
+                element.isCurrentCalculated = false;
+            }
+        }
+    }
+
+    public boolean isVSCurrentsFound() {
+        for (Element element : elementList){
+            if(Element.isVoltageSource(element)){
+                if(!element.isCurrentCalculated){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public int numberOfNotFoundVSCurrents(){
+        int i = 0;
+        for(Element element : elementList){
+            if(Element.isVoltageSource(element)){
+                if(!element.isCurrentCalculated){
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
+
+    public void findVSCurrent() {
+        double enteringCurrent = this.enteringCurrent();
+        for(Element element : elementList){
+            if (!element.isCurrentCalculated && Element.isVoltageSource(element)){
+                element.setCurrent(this,enteringCurrent);
+                element.isCurrentCalculated = true;
+                return;
+            }
+        }
+    }
+
+    //Error Checkers
+
+    public boolean areAllEnteringElementsCS() {
+        for(Element element : elementList){
+            if(!Element.isVoltageSource(element) && !Element.isCurrentSource(element)){
+                return false;
+            }
+        }
+        return true;
     }
 }
 

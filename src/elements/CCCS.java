@@ -5,26 +5,21 @@ import connections.Node;
 
 import java.awt.*;
 
-public class CurrentSource extends Element {
-    public static CurrentSource SAMPLE = new CurrentSource("I1",0,0,0,0);
+public class CCCS extends Element {
+    private Element controller;
+    private double controllerCurrent;
+    private double ratio;
 
-    private double iOffset;
-    private double iSin;
-    private double freq;
-    private double phi;
-
-
-    public CurrentSource(String elementName,double iOffset, double iSin, double freq , double phi){
+    public CCCS(String elementName, String controllerName, double ratio){
+        this.controller = Database.getInstance().findElement(controllerName);
+        this.ratio = ratio;
         this.elementName = elementName;
-        this.iOffset = iOffset;
-        this.iSin = iSin;
-        this.freq = freq;
-        this.phi = phi;
     }
     @Override
     public void update() {
         this.v = this.nodeP.getV() - this.nodeN.getV();
-        this.i = this.iOffset + (this.iSin * Math.sin((2 * Math.PI * freq * Database.t()) + (2 * Math.PI * freq * Database.getDeltaT()) + phi));
+        controllerCurrent = controller.getI();
+        this.i = controllerCurrent * ratio;
     }
 
     @Override
@@ -39,7 +34,7 @@ public class CurrentSource extends Element {
 
     @Override
     public int getElementType() {
-        return Element.CURRENT_SOURCE;
+        return Element.CCCS;
     }
 
     @Override
@@ -52,7 +47,7 @@ public class CurrentSource extends Element {
         drawName(g,dimension1,dimension2);
         double angle = findAngle(dimension1,dimension2);
         Dimension dim = nextDim(dimension1,ELEMENT_LENGTH/2,angle);
-        drawCircle(g,dim.width,dim.height,Element.ELEMENT_LENGTH/2);
+        drawPolygon(g,dimension1,dimension2);
         g.drawLine(dimension1.width,dimension1.height,dimension2.width,dimension2.height);
         drawLine(g,dim,Element.ELEMENT_LENGTH/3,angle + Math.PI/4);
         drawLine(g,dim,Element.ELEMENT_LENGTH/3,angle - Math.PI/4);
